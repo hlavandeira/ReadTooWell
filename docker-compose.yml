@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:17.4
+    container_name: postgres_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: rtw_0103
+      POSTGRES_DB: ReadTooWell
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      # Monta un único fichero SQL para inicializar la base de datos
+      - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - db_network
+  backend:
+    container_name: backend
+    build:
+      context: backend/
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - db_network
+  frontend:
+    container_name: frontend
+    build:
+      context: frontend/
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - db_network
+
+volumes:
+  db_data:
+
+networks:
+  db_network:
