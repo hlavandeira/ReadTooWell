@@ -11,6 +11,7 @@ services:
       - db_data:/var/lib/postgresql/data
       # Monta un único fichero SQL para inicializar la base de datos
       - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql:ro
+      - ./copy_csv.sql:/docker-entrypoint-initdb.d/copy_csv.sql:ro
     ports:
       - "5432:5432"
     networks:
